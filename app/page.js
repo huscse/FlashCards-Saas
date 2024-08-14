@@ -1,12 +1,12 @@
 import Image from "next/image";
 import getStripe from "@/utils/get-stripe";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { AppBar, Button, Container, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
 import Head from "next/head";
 
 export default function Home() {
   return (
-    <Container maxWidth = 'lg'>
+    <Container maxWidth = '100vw'>
       <Head>
         <title>Flashcard SaaS</title>
         <meta name = "description" content= 'create Flashcards from a promot'></meta>
@@ -23,6 +23,10 @@ export default function Home() {
           </SignedIn>
         </Toolbar>
       </AppBar>
+      <Box>
+        <Typography variant="h2">Welcome to PromptWise</Typography>
+        <Typography variant="h5">The easiest and fastest way to make flashcards with just a prompt</Typography>
+      </Box>
     </Container>
   )
 }

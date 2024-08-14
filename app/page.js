@@ -1,7 +1,7 @@
 import Image from "next/image";
 import getStripe from "@/utils/get-stripe";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Container, Grid, Toolbar, Typography } from "@mui/material";
 import Head from "next/head";
 
 export default function Home() {
@@ -23,9 +23,38 @@ export default function Home() {
           </SignedIn>
         </Toolbar>
       </AppBar>
-      <Box>
+      <Box sx = {{
+        textAlign: 'center',
+        my: 4,
+      }}>
         <Typography variant="h2">Welcome to PromptWise</Typography>
-        <Typography variant="h5">The easiest and fastest way to make flashcards with just a prompt</Typography>
+        <Typography variant="h5"> {''}The easiest and fastest way to make flashcards with just a prompt</Typography>
+        <Button variant="contained" color = 'primary' sx = {{mt: 2}}> Get Started</Button>
+      </Box>
+      <Box sx = {{my: 6}}>
+        <Typography variant='h6' components = 'h2'>
+          Features
+        </Typography>
+        <Grid contained spacing = {4}>
+          <Grid item xs ={12} md = {4}>
+            <Typography variant="h6">Easy prompt input</Typography>
+            {''}
+            <Typography>Easily generates flashcards from simple text prompts, streamlining the study process.</Typography>
+          </Grid>
+
+          <Grid item xs ={12} md = {4}>
+            <Typography variant="h6">Smart Flashcards</Typography>
+            {''}
+            <Typography>Ensures flashcards and study progress are synced across all devices, allowing users to study anytime, anywhere.</Typography>
+          </Grid>
+
+          <Grid item xs ={12} md = {4}>
+            <Typography variant="h6">Flaashcards generated in minutes</Typography>
+            {''}
+            <Typography>Customize the look and feel of your flashcards with minimal effort, focusing on what matters most—learning.</Typography>
+          </Grid>
+
+        </Grid>
       </Box>
     </Container>
   )

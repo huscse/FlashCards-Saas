@@ -16,8 +16,13 @@ export default function Home() {
         <Toolbar>
           <Typography variant="h6" style={{flexGrow: 1}}>PromptWise</Typography>
           <SignedOut>
-            <Button color="inherit">Login</Button>
-            <Button color = 'inherit'>Sign Up</Button>
+            <Button color="inherit" href="/sign-in">
+            {''}
+            Login
+            </Button>
+            <Button color = 'inherit' href="/sign-up">
+            {''}
+            Sign Up</Button>
           </SignedOut>
           <SignedIn>
             <UserButton />
@@ -85,7 +90,7 @@ export default function Home() {
             <Typography variant="h5">Basic</Typography>
             <Typography variant="h6">$3 / month</Typography>
             {''}
-            <Typography>Access to basic features and limited storage</Typography>
+            <Typography>Access to editing flashcards and limited storage</Typography>
             <Button variant="contained" color = 'primary' sx = {{mt: 2}}>Choose plan</Button>
             </Box>
           </Grid>

@@ -10,7 +10,7 @@ export default function Home() {
     <Container maxWidth = '100vw'>
       <Head>
         <title>Flashcard SaaS</title>
-        <meta name = "description" content= 'create Flashcards from a promot'></meta>
+        <meta name = "description" content= 'create Flashcards from a prompt'></meta>
       </Head>
       <AppBar position="static">
         <Toolbar>

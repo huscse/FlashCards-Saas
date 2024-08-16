@@ -36,7 +36,7 @@ export default function Home() {
         <Typography variant='h6'>
           Features
         </Typography>
-        <Grid contained spacing = {4}>
+        <Grid container spacing = {4}>
           <Grid item xs ={12} md = {4}>
             <Typography variant="h6">Easy prompt input</Typography>
             {''}
@@ -58,32 +58,52 @@ export default function Home() {
       </Box>
       <Box sx={{my: 6, textAlign: 'center'}}>
       <Typography variant='h4'>Pricing</Typography>
-      <Grid contained spacing = {4}>
+      <Grid container spacing = {4}>
           <Grid item xs ={12} md = {4}>
             <Box sx={{
               p: 3,
-              border: '1px solid',
-              borderColor: 'grey.300',
-              borderRadius: 3,
+              border: '9px solid',
+              borderColor: 'blue.300',
+              borderRadius: 4,
             }}> 
             
-            <Typography variant="h6">Easy prompt input</Typography>
+            <Typography variant="h5">Free</Typography>
+            <Typography variant="h6">$0 / month</Typography>
             {''}
-            <Typography>Easily generates flashcards from simple text prompts, streamlining the study process.</Typography>
+            <Typography>Access to Basic features with limited storage.</Typography>
+            <Button variant="contained" color = 'primary' sx = {{mt: 2}}>Choose plan</Button>
             </Box>
           </Grid>
 
           <Grid item xs ={12} md = {4}>
-            <Typography variant="h6">Smart Flashcards</Typography>
+            <Box sx={{
+              p: 3,
+              border: '9px solid',
+              borderColor: 'blue.300',
+              borderRadius: 4,
+            }}>
+            <Typography variant="h5">Basic</Typography>
+            <Typography variant="h6">$3 / month</Typography>
             {''}
-            <Typography>Ensures flashcards and study progress are synced across all devices, allowing users to study anytime, anywhere.</Typography>
+            <Typography>Access to basic features and limited storage</Typography>
+            <Button variant="contained" color = 'primary' sx = {{mt: 2}}>Choose plan</Button>
+            </Box>
           </Grid>
 
           <Grid item xs ={12} md = {4}>
-            <Typography variant="h6">Flaashcards generated in minutes</Typography>
+            <Box sx={{
+              p: 3,
+              border: '9px solid',
+              borderColor: 'blue.300',
+              borderRadius: 4,
+            }}>
+            <Typography variant="h5">Premium</Typography>
+            <Typography variant="h6">$7 / month</Typography>
             {''}
-            <Typography>Customize the look and feel of your flashcards with minimal effort, focusing on what matters most—learning.</Typography>
-          </Grid>
+            <Typography>Access to premiuim features and unlimited storage</Typography>
+            <Button variant="contained" color = 'primary' sx = {{mt: 2}}>Choose plan</Button>
+            </Box>
+          </Grid>  
         </Grid>
       </Box>
     </Container>

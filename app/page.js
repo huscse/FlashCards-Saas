@@ -3,7 +3,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, AppBar, Box, Button, Container, Grid, Toolbar, Typography } from "@mui/material";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Head from "next/head";
-import getStripe from "@/utils/get-stripe";
+import { useRouter } from "next/navigation";
 
 const darkTheme = createTheme({
   palette: {
@@ -26,27 +26,17 @@ const darkTheme = createTheme({
 });
 
 export default function Home() {
-  const handleSubmit = async () => {
-    const checkoutSession = await fetch('/api/checkout_session', {
-      method: 'POST',
-      headers: {
-        origin: 'https://localhost:3000',
-      },
-    })
-    const checkoutSessionJson = await checkoutSession.json()
-    if (checkoutSession.statusCode === 500) {
-      console.error(checkoutSession.message)
-      return
-    }
-    const stripe = await getStripe()
-    const {error} = await stripe.redirectToCheckout({
-      sessionId: checkoutSessionJson.id,
-    })
+  const router = useRouter();
 
-    if (error) {
-      console.warn(error.message)
-    }
-  }
+  const handleGetStarted = () => {
+    router.push('/generate');
+  };
+
+  const handleSubmit = () => {
+    // Define your handleSubmit logic here
+    router.push('/pricing');
+  };
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -79,6 +69,13 @@ export default function Home() {
               </Button>
             </SignedOut>
             <SignedIn>
+              <Button
+                color="inherit"
+                href="/flashcards"
+                sx={{ marginRight: 2, "&:hover": { backgroundColor: "#90caf9" } }}
+              >
+                My Flashcards
+              </Button>
               <UserButton />
             </SignedIn>
           </Toolbar>
@@ -104,59 +101,75 @@ export default function Home() {
             <Typography variant="h5" sx={{ mb: 4 }}>
               The easiest and fastest way to make flashcards with just a prompt!
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{
-                padding: "10px 20px",
-                fontSize: "1.2rem",
-                backgroundColor: "#90caf9",
-                "&:hover": { backgroundColor: "#64b5f6" },
-              }}
-            >
-              Get Started
-            </Button>
+            <SignedIn>
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  padding: "10px 20px",
+                  fontSize: "1.2rem",
+                  backgroundColor: "#90caf9",
+                  "&:hover": { backgroundColor: "#64b5f6" },
+                }}
+                onClick={handleGetStarted}
+              >
+                Get Started
+              </Button>
+            </SignedIn>
+            <SignedOut>
+              <Button
+                variant="contained"
+                
+                color="primary"
+                href="/sign-in"
+                sx={{
+                  padding: "10px 20px",
+                  fontSize: "1.1rem",
+                  backgroundColor: "#90caf9",
+                  "&:hover": { backgroundColor: "#64b5f6" },
+                }}
+              >
+                Sign In to Get Started
+              </Button>
+            </SignedOut>
           </Box>
         </Box>
 
         {/* Features Section */}
         <Box sx={{ my: 6, px: 3 }}>
-          <Typography variant="h4" textAlign="center" mb={4} href>
+          <Typography variant="h4" textAlign="center" mb={4}>
             Features
           </Typography>
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
               <Box textAlign="center">
-                <Typography variant="h6" mt={2}>
+                <Typography variant="h6" mt={2} padding={1}>
                   Easy Prompt Input
                 </Typography>
                 <Typography variant="body1" color="textSecondary">
-                  Easily generates flashcards from simple text prompts,
-                  streamlining the study process.
+                Quickly generate flashcards from simple text prompts. Streamline your study process with ease.
                 </Typography>
               </Box>
             </Grid>
 
             <Grid item xs={12} md={4}>
               <Box textAlign="center">
-                <Typography variant="h6" mt={2}>
+                <Typography variant="h6" mt={2} padding={1}>
                   Smart Flashcards
                 </Typography>
                 <Typography variant="body1" color="textSecondary">
-                  Ensures flashcards and study progress are synced across all
-                  devices, allowing users to study anytime, anywhere.
+                Sync your flashcards and study progress across devices, allowing you to study anytime, anywhere.
                 </Typography>
               </Box>
             </Grid>
 
             <Grid item xs={12} md={4}>
               <Box textAlign="center">
-                <Typography variant="h6" mt={2}>
-                  Flashcards Generated in Minutes
+                <Typography variant="h6" mt={2} padding={1}>
+                  Flashcards Generated in Seconds
                 </Typography>
                 <Typography variant="body1" color="textSecondary">
-                  Customize the look and feel of your flashcards with minimal
-                  effort, focusing on what matters most—learning.
+                Customize and create flashcards in no time. Focus on learning with minimal effort.
                 </Typography>
               </Box>
             </Grid>

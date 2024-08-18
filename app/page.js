@@ -1,9 +1,10 @@
 'use client'
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, AppBar, Box, Button, Container, Grid, Toolbar, Typography } from "@mui/material";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
+import getStripe from "@/utils/get-stripe";
 
 const darkTheme = createTheme({
   palette: {
@@ -26,15 +27,48 @@ const darkTheme = createTheme({
 });
 
 export default function Home() {
+  const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push('/generate');
+    if (isSignedIn) {
+      router.push('/generate');
+    } else {
+      router.push('/sign-in');
+    }
   };
 
-  const handleSubmit = () => {
-    // Define your handleSubmit logic here
-    router.push('/pricing');
+  const handleBasicPlan = () => {
+    if (isSignedIn) {
+      router.push('/generate');
+    } else {
+      router.push('/sign-in');
+    }
+  };
+
+  const handlePremiumPlan = async () => {
+    try {
+      const checkoutSession = await fetch('/api/checkout_session', {
+        method: 'POST',
+        headers: {
+          origin: 'https://localhost:3000',
+        },
+      });
+      const checkoutSessionJson = await checkoutSession.json();
+      if (checkoutSession.statusCode === 500) {
+        console.error(checkoutSession.message);
+        return;
+      }
+      const stripe = await getStripe();
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: checkoutSessionJson.id,
+      });
+      if (error) {
+        console.warn(error.message);
+      }
+    } catch (err) {
+      console.error('Failed to redirect to Stripe:', err);
+    }
   };
 
   return (
@@ -99,39 +133,21 @@ export default function Home() {
               Welcome to PromptWise
             </Typography>
             <Typography variant="h5" sx={{ mb: 4 }}>
-              The easiest and fastest way to make flashcards with just a prompt!
+              Create flashcards effortlessly from any prompt. Simplify your study routine today!
             </Typography>
-            <SignedIn>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{
-                  padding: "10px 20px",
-                  fontSize: "1.2rem",
-                  backgroundColor: "#90caf9",
-                  "&:hover": { backgroundColor: "#64b5f6" },
-                }}
-                onClick={handleGetStarted}
-              >
-                Get Started
-              </Button>
-            </SignedIn>
-            <SignedOut>
-              <Button
-                variant="contained"
-                
-                color="primary"
-                href="/sign-in"
-                sx={{
-                  padding: "10px 20px",
-                  fontSize: "1.1rem",
-                  backgroundColor: "#90caf9",
-                  "&:hover": { backgroundColor: "#64b5f6" },
-                }}
-              >
-                Sign In to Get Started
-              </Button>
-            </SignedOut>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{
+                padding: "10px 20px",
+                fontSize: "1.2rem",
+                backgroundColor: "#90caf9",
+                "&:hover": { backgroundColor: "#64b5f6" },
+              }}
+              onClick={handleGetStarted}
+            >
+              Get Started
+            </Button>
           </Box>
         </Box>
 
@@ -147,7 +163,7 @@ export default function Home() {
                   Easy Prompt Input
                 </Typography>
                 <Typography variant="body1" color="textSecondary">
-                Quickly generate flashcards from simple text prompts. Streamline your study process with ease.
+                  Quickly generate flashcards from simple text prompts. Streamline your study process with ease.
                 </Typography>
               </Box>
             </Grid>
@@ -158,7 +174,7 @@ export default function Home() {
                   Smart Flashcards
                 </Typography>
                 <Typography variant="body1" color="textSecondary">
-                Sync your flashcards and study progress across devices, allowing you to study anytime, anywhere.
+                  Sync your flashcards and study progress across devices, allowing you to study anytime, anywhere.
                 </Typography>
               </Box>
             </Grid>
@@ -166,10 +182,10 @@ export default function Home() {
             <Grid item xs={12} md={4}>
               <Box textAlign="center">
                 <Typography variant="h6" mt={2} padding={1}>
-                  Flashcards Generated in Seconds
+                  Flashcards Generated in Minutes
                 </Typography>
                 <Typography variant="body1" color="textSecondary">
-                Customize and create flashcards in no time. Focus on learning with minimal effort.
+                  Customize and create flashcards in minutes. Focus on learning with minimal effort.
                 </Typography>
               </Box>
             </Grid>
@@ -197,8 +213,8 @@ export default function Home() {
               >
                 <Typography variant="h5">Basic</Typography>
                 <Typography variant="h6">Free</Typography>
-                <Typography>
-                  Generate Flashcards in minutes, saved flashcards, limited storage
+                <Typography padding={1}>
+                  Get started with essential features. Generate and save flashcards with limited storage. Access to saved flashcards
                 </Typography>
                 <Button
                   variant="contained"
@@ -208,6 +224,7 @@ export default function Home() {
                     backgroundColor: "#90caf9",
                     "&:hover": { backgroundColor: "#64b5f6" },
                   }}
+                  onClick={handleBasicPlan}
                 >
                   Choose Plan
                 </Button>
@@ -228,9 +245,9 @@ export default function Home() {
                 }}
               >
                 <Typography variant="h5">Premium</Typography>
-                <Typography variant="h6">$7 / month</Typography>
-                <Typography>
-                  Access to premium features and unlimited storage
+                <Typography variant="h6">$5 / month</Typography>
+                <Typography padding={1}>
+                  Unlock advanced features and enjoy unlimited storage. Enhance your learning experience with premium tools.
                 </Typography>
                 <Button
                   variant="contained"
@@ -240,7 +257,7 @@ export default function Home() {
                     backgroundColor: "#90caf9",
                     "&:hover": { backgroundColor: "#64b5f6" },
                   }}
-                  onClick={handleSubmit}
+                  onClick={handlePremiumPlan}
                 >
                   Choose Plan
                 </Button>

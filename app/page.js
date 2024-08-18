@@ -3,6 +3,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, AppBar, Box, Button, Container, Grid, Toolbar, Typography } from "@mui/material";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Head from "next/head";
+import getStripe from "@/utils/get-stripe";
 
 const darkTheme = createTheme({
   palette: {
@@ -25,6 +26,27 @@ const darkTheme = createTheme({
 });
 
 export default function Home() {
+  const handleSubmit = async () => {
+    const checkoutSession = await fetch('/api/checkout_session', {
+      method: 'POST',
+      headers: {
+        origin: 'https://localhost:3000',
+      },
+    })
+    const checkoutSessionJson = await checkoutSession.json()
+    if (checkoutSession.statusCode === 500) {
+      console.error(checkoutSession.message)
+      return
+    }
+    const stripe = await getStripe()
+    const {error} = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    })
+
+    if (error) {
+      console.warn(error.message)
+    }
+  }
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -99,7 +121,7 @@ export default function Home() {
 
         {/* Features Section */}
         <Box sx={{ my: 6, px: 3 }}>
-          <Typography variant="h4" textAlign="center" mb={4}>
+          <Typography variant="h4" textAlign="center" mb={4} href>
             Features
           </Typography>
           <Grid container spacing={4}>
@@ -205,6 +227,7 @@ export default function Home() {
                     backgroundColor: "#90caf9",
                     "&:hover": { backgroundColor: "#64b5f6" },
                   }}
+                  onClick={handleSubmit}
                 >
                   Choose Plan
                 </Button>

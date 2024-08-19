@@ -1,3 +1,4 @@
+
 'use client'
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, AppBar, Box, Button, Container, Grid, Toolbar, Typography } from "@mui/material";
@@ -129,7 +130,7 @@ export default function Home() {
           }}
         >
           <Box>
-            <Typography variant="h2" gutterBottom>
+            <Typography variant="h4" gutterBottom>
               Welcome to PromptWise
             </Typography>
             <Typography variant="h5" sx={{ mb: 4 }}>
@@ -140,7 +141,7 @@ export default function Home() {
               color="primary"
               sx={{
                 padding: "10px 20px",
-                fontSize: "1.2rem",
+                fontSize: "0.8rem",
                 backgroundColor: "#90caf9",
                 "&:hover": { backgroundColor: "#64b5f6" },
               }}

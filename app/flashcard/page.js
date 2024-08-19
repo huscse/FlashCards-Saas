@@ -66,7 +66,7 @@ export default function Flashcard() {
       <CssBaseline />
       <Container maxWidth="100vw" sx={{ mt: 4, px: 3 }}>
         <Typography padding={5} variant="h4" textAlign="center" gutterBottom>
-          Flashcard Viewer
+          Flashcards Viewer
         </Typography>
         <Grid container spacing={4}>
           {flashcards.map((flashcard) => (

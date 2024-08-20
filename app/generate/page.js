@@ -44,11 +44,15 @@ export default function Generate() {
   const handleSubmit = async () => {
     fetch('api/generate', {
       method: 'POST',
-      body: text,
+      body: JSON.stringify({ text, frontColor, backColor }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
-    .then((res) => res.json())
-    .then((data) => setFlashcards(data))
+      .then((res) => res.json())
+      .then((data) => setFlashcards(data));
   };
+  
 
   const handleCardClick = (id) => {
     setFlipped((prev) => ({
@@ -70,16 +74,16 @@ export default function Generate() {
       alert('You must be signed in to save flashcards.');
       return;
     }
-
+  
     if (!name) {
       alert('Please enter a name');
       return;
     }
-
+  
     const batch = writeBatch(db);
     const userDocRef = doc(collection(db, 'users'), user.id);
     const docSnap = await getDoc(userDocRef);
-
+  
     if (docSnap.exists()) {
       const collections = docSnap.data().flashcards || [];
       if (collections.find((f) => f.name === name)) {
@@ -92,17 +96,18 @@ export default function Generate() {
     } else {
       batch.set(userDocRef, { flashcards: [{ name }] });
     }
-
+  
     const colRef = collection(userDocRef, name);
     flashcards.forEach((flashcard) => {
       const cardDocRef = doc(colRef);
-      batch.set(cardDocRef, flashcard);
+      batch.set(cardDocRef, { ...flashcard, frontColor, backColor });
     });
-
+  
     await batch.commit();
     handleClose();
     router.push('/flashcards');
   };
+  
 
   return (
     <ThemeProvider theme={darkTheme}>

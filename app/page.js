@@ -5,6 +5,8 @@ import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import getStripe from "@/utils/get-stripe";
+import { motion } from "framer-motion";
+import { Lightbulb, Sync, Timer } from '@mui/icons-material'; // Import icons
 
 const darkTheme = createTheme({
   palette: {
@@ -83,7 +85,7 @@ export default function Home() {
         {/* Navigation Bar */}
         <AppBar position="static" sx={{ backgroundColor: "#2e3b55" }}>
           <Toolbar>
-            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
+            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }} className="shiny-text">
               PromptWise
             </Typography>
             <SignedOut>
@@ -119,7 +121,7 @@ export default function Home() {
         <Box
           sx={{
             height: "60vh",
-            backgroundColor: "#1e1e1e",
+            background: "linear-gradient(135deg, #1e1e1e 30%, #2e3b55 100%)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -129,127 +131,161 @@ export default function Home() {
           }}
         >
           <Box>
-            <Typography variant="h4" gutterBottom>
-              Welcome to PromptWise
-            </Typography>
-            <Typography variant="h5" sx={{ mb: 4 }}>
-              Create flashcards effortlessly from any prompt. Simplify your study routine today!
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{
-                padding: "10px 20px",
-                fontSize: "0.8rem",
-                backgroundColor: "#90caf9",
-                "&:hover": { backgroundColor: "#64b5f6" },
-              }}
-              onClick={handleGetStarted}
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
             >
-              Get Started
-            </Button>
+              <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", fontSize: "2.5rem" }}>
+                Welcome to PromptWise
+              </Typography>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <Typography variant="h5" sx={{ mb: 4 }}>
+                Create flashcards effortlessly from any prompt. Simplify your study routine today!
+              </Typography>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{
+                  padding: "10px 20px",
+                  fontSize: "0.8rem",
+                  backgroundColor: "#90caf9",
+                  "&:hover": { backgroundColor: "#64b5f6", boxShadow: "0px 0px 15px rgba(100, 181, 246, 0.5)" },
+                  transition: "all 0.3s ease",
+                }}
+                onClick={handleGetStarted}
+              >
+                Get Started
+              </Button>
+            </motion.div>
           </Box>
         </Box>
 
         {/* Features Section */}
-        <Box sx={{ my: 6, px: 3 }}>
-          <Typography variant="h4" textAlign="center" mb={4}>
-            Features
-          </Typography>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={4}>
-              <Box textAlign="center">
-                <Typography variant="h6" mt={2} padding={1}>
-                  Easy Prompt Input
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  Quickly generate flashcards from simple text prompts. Streamline your study process with ease.
-                </Typography>
-              </Box>
-            </Grid>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <Box sx={{ my: 6, px: 3 }}>
+            <Typography variant="h4" textAlign="center" mb={4}>
+              Features
+            </Typography>
+            <Grid container spacing={4}>
+              <Grid item xs={12} sm={6} md={4}>
+                <Box textAlign="center">
+                  <Lightbulb color="primary" sx={{ fontSize: 40 }} />
+                  <Typography variant="h6" mt={2} padding={1}>
+                    Easy Prompt Input
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    Quickly generate flashcards from simple text prompts. Streamline your study process with ease.
+                  </Typography>
+                </Box>
+              </Grid>
 
-            <Grid item xs={12} md={4}>
-              <Box textAlign="center">
-                <Typography variant="h6" mt={2} padding={1}>
-                  Smart Flashcards
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  Sync your flashcards and study progress across devices, allowing you to study anytime, anywhere.
-                </Typography>
-              </Box>
-            </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Box textAlign="center">
+                  <Sync color="primary" sx={{ fontSize: 40 }} />
+                  <Typography variant="h6" mt={2} padding={1}>
+                    Smart Flashcards
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    Sync your flashcards and study progress across devices, allowing you to study anytime, anywhere.
+                  </Typography>
+                </Box>
+              </Grid>
 
-            <Grid item xs={12} md={4}>
-              <Box textAlign="center">
-                <Typography variant="h6" mt={2} padding={1}>
-                  Flashcards Generated in Minutes
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  Customize and create flashcards in minutes. Focus on learning with minimal effort.
-                </Typography>
-              </Box>
+              <Grid item xs={12} sm={6} md={4}>
+                <Box textAlign="center">
+                  <Timer color="primary" sx={{ fontSize: 40 }} />
+                  <Typography variant="h6" mt={2} padding={1}>
+                    Flashcards Generated in Minutes
+                  </Typography>
+                  <Typography variant="body1" color="textSecondary">
+                    Customize and create flashcards in minutes. Focus on learning with minimal effort.
+                  </Typography>
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
+          </Box>
+        </motion.div>
 
         {/* Pricing Section */}
-        <Box sx={{ my: 6, textAlign: "center", px: 3 }}>
-          <Typography variant="h4" padding={3}>
-            Pricing
-          </Typography>
-          <Grid container spacing={4} justifyContent="center">
-            <Grid item xs={12} md={4}>
-              <Box
-                sx={{
-                  p: 3,
-                  backgroundColor: "background.paper",
-                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.3)",
-                  borderRadius: 4,
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                    transition: "transform 0.3s",
-                  },
-                }}
-              >
-                <Typography variant="h5">Basic</Typography>
-                <Typography variant="h6">Free</Typography>
-                <Typography padding={1}>
-                  Get started with essential features. Generate and save flashcards with limited storage. Access to saved flashcards
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Box sx={{ my: 6, textAlign: "center", px: 3 }}>
+            <Typography variant="h4" padding={3}>
+              Pricing
+            </Typography>
+            <Grid container spacing={4} justifyContent="center">
+              <Grid item xs={12} sm={6} md={4}>
+                <Box
                   sx={{
-                    mt: 2,
-                    backgroundColor: "#90caf9",
-                    "&:hover": { backgroundColor: "#64b5f6" },
+                    p: 3,
+                    backgroundColor: "background.paper",
+                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.3)",
+                    borderRadius: 4,
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      transition: "transform 0.3s",
+                    },
                   }}
-                  onClick={handleBasicPlan}
                 >
-                  Choose Plan
-                </Button>
-              </Box>
-            </Grid>
+                  <Typography variant="h5">Basic</Typography>
+                  <Typography variant="h6">Free</Typography>
+                  <Typography padding={1}>
+                    Get started with essential features. Generate and save flashcards with limited storage. Access to saved flashcards
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                      mt: 2,
+                      backgroundColor: "#90caf9",
+                      "&:hover": { backgroundColor: "#64b5f6" },
+                    }}
+                    onClick={handleBasicPlan}
+                  >
+                    Choose Plan
+                  </Button>
+                </Box>
+              </Grid>
 
-            <Grid item xs={12} md={4}>
-  <Box
-    sx={{
-      p: 3,
-      backgroundColor: "background.paper",
-      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.3)",
-      borderRadius: 4,
-      "&:hover": {
-        transform: "scale(1.05)",
-        transition: "transform 0.3s",
-      },
-    }}
-  >
-    <Typography variant="h5">Premium</Typography>
-    <Typography variant="h6">$5 / month</Typography>
-    <Typography padding={1}>
-      Unlock advanced features and enjoy unlimited storage. Enhance your learning experience with premium tools.
-    </Typography>
-    <Button
+              <Grid item xs={12} md={4}>
+                <Box
+                  sx={{
+                    p: 3,
+                    backgroundColor: "background.paper",
+                    boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.3)",
+                    borderRadius: 4,
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      transition: "transform 0.3s",
+                    },
+                  }}
+                >
+                  <Typography variant="h5">Premium</Typography>
+                  <Typography variant="h6">$5 / month</Typography>
+                  <Typography padding={1}>
+                    Unlock advanced features and enjoy unlimited storage. Enhance your learning experience with premium tools.
+                  </Typography>
+                  <Button
       variant="contained"
       color="primary"
       sx={{
@@ -263,11 +299,11 @@ export default function Home() {
     >
       Choose Plan
     </Button>
-  </Box>
-</Grid>
-
-          </Grid>
-        </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        </motion.div>
       </Container>
     </ThemeProvider>
   );

@@ -81,9 +81,6 @@ export default function Home() {
         <Head>
           <title>PromptWise</title>
           <meta name="PromptWise" content="Create Flashcards from a prompt" />
-          
-        {/* AdSense meta tag */}
-        <meta name="google-adsense-account" content="ca-pub-2478160158830105"></meta>
         </Head>
 
         {/* Navigation Bar */}

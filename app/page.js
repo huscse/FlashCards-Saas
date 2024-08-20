@@ -32,6 +32,7 @@ export default function Home() {
   const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
 
+
   const handleGetStarted = () => {
     if (isSignedIn) {
       router.push('/generate');
@@ -79,7 +80,10 @@ export default function Home() {
       <Container maxWidth="100vw" disableGutters>
         <Head>
           <title>PromptWise</title>
-          <meta name="description" content="Create Flashcards from a prompt" />
+          <meta name="PromptWise" content="Create Flashcards from a prompt" />
+          
+        {/* AdSense meta tag */}
+        <meta name="google-adsense-account" content="ca-pub-2478160158830105"></meta>
         </Head>
 
         {/* Navigation Bar */}

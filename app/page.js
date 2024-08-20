@@ -1,4 +1,3 @@
-
 'use client'
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, AppBar, Box, Button, Container, Grid, Toolbar, Typography } from "@mui/material";
@@ -233,37 +232,40 @@ export default function Home() {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <Box
-                sx={{
-                  p: 3,
-                  backgroundColor: "background.paper",
-                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.3)",
-                  borderRadius: 4,
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                    transition: "transform 0.3s",
-                  },
-                }}
-              >
-                <Typography variant="h5">Premium</Typography>
-                <Typography variant="h6">$5 / month</Typography>
-                <Typography padding={1}>
-                  Unlock advanced features and enjoy unlimited storage. Enhance your learning experience with premium tools.
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{
-                    mt: 2,
-                    backgroundColor: "#90caf9",
-                    "&:hover": { backgroundColor: "#64b5f6" },
-                  }}
-                  onClick={handlePremiumPlan}
-                >
-                  Choose Plan
-                </Button>
-              </Box>
-            </Grid>
+  <Box
+    sx={{
+      p: 3,
+      backgroundColor: "background.paper",
+      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.3)",
+      borderRadius: 4,
+      "&:hover": {
+        transform: "scale(1.05)",
+        transition: "transform 0.3s",
+      },
+    }}
+  >
+    <Typography variant="h5">Premium</Typography>
+    <Typography variant="h6">$5 / month</Typography>
+    <Typography padding={1}>
+      Unlock advanced features and enjoy unlimited storage. Enhance your learning experience with premium tools.
+    </Typography>
+    <Button
+      variant="contained"
+      color="primary"
+      sx={{
+        mt: 2,
+        backgroundColor: "#90caf9",
+        "&:hover": { backgroundColor: "#64b5f6" },
+      }}
+      href="https://buy.stripe.com/6oE4hD5esdyugcE5kk"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Choose Plan
+    </Button>
+  </Box>
+</Grid>
+
           </Grid>
         </Box>
       </Container>

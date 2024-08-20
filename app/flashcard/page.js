@@ -68,72 +68,64 @@ export default function Flashcard() {
         <Typography padding={5} variant="h4" textAlign="center" gutterBottom>
           Flashcards Viewer
         </Typography>
-        <Grid container spacing={4}>
-          {flashcards.map((flashcard) => (
-            <Grid item xs={12} sm={6} md={4} key={flashcard.id}>
-              <Card
-                sx={{
-                  backgroundColor: "background.paper",
-                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.3)",
-                  borderRadius: 6,
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                    transition: "transform 0.3s",
-                  },
-                }}
-              >
-                <CardActionArea onClick={() => handleCardClick(flashcard.id)}>
-                  <CardContent>
-                    <Box sx={{
-                      perspective: '1000px',
-                      '& > div': {
-                        transition: 'transform 0.6s',
-                        transformStyle: 'preserve-3d',
-                        position: 'relative',
-                        width: '100%',
-                        height: '200px',
-                        transform: flipped[flashcard.id] ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                      },
-                      '& > div > div': {
-                        position: 'absolute',
-                        width: '100%',
-                        height: '100%',
-                        backfaceVisibility: "hidden",
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        padding: 2,
-                        boxSizing: 'border-box',
-                      },
-                      '& > div > div:nth-of-type(1)': {
-                        backgroundColor: 'background.paper',
-                        color: 'text.primary',
-                      },
-                      '& > div > div:nth-of-type(2)': {
-                        transform: 'rotateY(180deg)',
-                        backgroundColor: '#2e3b55',  // Green color for the back
-                        color: '#ffffff',
-                      },
-                    }}>
-                      <div>
-                        <div>
-                          <Typography variant="h5" component="div">
-                            {flashcard.front}
-                          </Typography>
-                        </div>
-                        <div>
-                          <Typography variant="h5" component="div">
-                            {flashcard.back}
-                          </Typography>
-                        </div>
-                      </div>
-                    </Box>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <Grid container spacing={3}>
+                            {flashcards.map((flashcard, index) => (
+                                <Grid item xs={12} sm={6} md={4} key={index}>
+                                    <Card>
+                                        <CardActionArea onClick={() => handleCardClick(index)}>
+                                            <CardContent>
+                                                <Box sx={{
+                                                    perspective: '1000px',
+                                                    '& > div': {
+                                                        transition: 'transform 0.6s',
+                                                        transformStyle: 'preserve-3d',
+                                                        position: 'relative',
+                                                        width: '100%',
+                                                        height: '300px', // Increased height for larger cards
+                                                        boxShadow: '0 4px 8px 0 rgba(0,0,0, 0.3)', // Stronger shadow for a more realistic look
+                                                        transform: flipped[index] ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                                                    },
+                                                    '& > div > div': {
+                                                        position: 'absolute',
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        backfaceVisibility: "hidden",
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        padding: 2,
+                                                        boxSizing: 'border-box',
+                                                        borderRadius: '12px', // Rounded corners to resemble cards
+                                                    },
+                                                    '& > div > div:nth-of-type(1)': {
+                                                        backgroundColor: '#fff', // Front of the card
+                                                        color: '#000',
+                                                    },
+                                                    '& > div > div:nth-of-type(2)': {
+                                                        backgroundColor: '#2196f3', // Back of the card (blue)
+                                                        color: '#fff',
+                                                        transform: 'rotateY(180deg)',
+                                                    },
+                                                }}>
+                                                    <div>
+                                                        <div>
+                                                            <Typography variant="h6" component="div">
+                                                                {flashcard.front}
+                                                            </Typography>
+                                                        </div>
+                                                        <div>
+                                                            <Typography variant="h6" component="div">
+                                                                {flashcard.back}
+                                                            </Typography>
+                                                        </div>
+                                                    </div>
+                                                </Box>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
       </Container>
     </ThemeProvider>
   )

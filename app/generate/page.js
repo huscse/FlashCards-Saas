@@ -327,7 +327,7 @@ export default function Generate() {
             <Button onClick={saveFlashcards} color="primary" variant="contained">
               Save
             </Button>
-            <Analytics/>
+            <Analytics />
           </DialogActions>
         </Dialog>
       </Container>

@@ -54,7 +54,7 @@ export default function Home() {
       const checkoutSession = await fetch('/api/checkout_session', {
         method: 'POST',
         headers: {
-          origin: 'https://localhost:3000',
+          origin: 'https://promptwise-first.vercel.app',
         },
       });
       const checkoutSessionJson = await checkoutSession.json();
@@ -68,11 +68,14 @@ export default function Home() {
       });
       if (error) {
         console.warn(error.message);
+      } else {
+        router.push('/generate'); // Redirect to generate page after successful payment
       }
     } catch (err) {
       console.error('Failed to redirect to Stripe:', err);
     }
   };
+  
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -81,9 +84,6 @@ export default function Home() {
         <Head>
           <title>PromptWise</title>
           <meta name="PromptWise" content="Create Flashcards from a prompt" />
-          
-        {/* AdSense meta tag */}
-        <meta name="google-adsense-account" content="ca-pub-2478160158830105"></meta>
         </Head>
 
         {/* Navigation Bar */}

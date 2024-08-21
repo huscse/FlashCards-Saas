@@ -5,6 +5,7 @@ import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "/firebase";
 import React, { useState } from 'react';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Analytics } from "@vercel/analytics/react"
 import { CssBaseline, Container, Box, Button, Card, CardActionArea, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, TextField, Typography, Grid } from "@mui/material";
 
 const darkTheme = createTheme({
@@ -326,9 +327,11 @@ export default function Generate() {
             <Button onClick={saveFlashcards} color="primary" variant="contained">
               Save
             </Button>
+            <Analytics/>
           </DialogActions>
         </Dialog>
       </Container>
     </ThemeProvider>
+    
   );
 }

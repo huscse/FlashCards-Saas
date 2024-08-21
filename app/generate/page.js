@@ -112,6 +112,7 @@ export default function Generate() {
 
   return (
     <ThemeProvider theme={darkTheme}>
+       <Analytics />
       <CssBaseline />
       <Container maxWidth="md">
         <Box
@@ -327,7 +328,6 @@ export default function Generate() {
             <Button onClick={saveFlashcards} color="primary" variant="contained">
               Save
             </Button>
-            <Analytics />
           </DialogActions>
         </Dialog>
       </Container>

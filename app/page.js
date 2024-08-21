@@ -78,7 +78,6 @@ export default function Home() {
   
 
   return (
-    <Analytics/>
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Container maxWidth="100vw" disableGutters>
@@ -348,6 +347,7 @@ export default function Home() {
           </Typography>
         </Box>
       </Container>
+      <Analytics />
     </ThemeProvider>
   );
 }

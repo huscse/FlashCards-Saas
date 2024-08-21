@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import getStripe from "@/utils/get-stripe";
 import { motion } from "framer-motion";
 import { Lightbulb, Sync, Timer } from '@mui/icons-material'; // Import icons
-
+import { Analytics } from "@vercel/analytics/react"
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -78,6 +78,7 @@ export default function Home() {
   
 
   return (
+    <Analytics/>
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Container maxWidth="100vw" disableGutters>

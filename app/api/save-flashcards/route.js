@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { getAuth } from '@clerk/nextjs/server';
 import admin from 'firebase-admin';
 
-// Initialize Firebase Admin (if not already initialized elsewhere)
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({

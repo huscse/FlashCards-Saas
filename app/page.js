@@ -637,7 +637,7 @@ export default function Home() {
                     fontSize: '1.1rem',
                   }}
                 >
-                  We don't just create flashcards. We engineer knowledge
+                  We don&apos;t just create flashcards. We engineer knowledge
                   retention through intelligent design and cognitive science.
                 </Typography>
               </Box>
@@ -1086,8 +1086,8 @@ export default function Home() {
                 opacity: 0.9,
               }}
             >
-              Join thousands of students and professionals who've transformed
-              their learning with PromptWise.
+              Join thousands of students and professionals who&apos;ve
+              transformed
             </Typography>
             <Button
               variant="contained"

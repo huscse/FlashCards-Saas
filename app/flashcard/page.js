@@ -631,7 +631,7 @@ export default function Flashcard() {
             <Typography variant="body1" sx={{ color: 'text.secondary' }}>
               Click any card to reveal the answer. Try to recall the answer
               before flipping. For best results, review your flashcards daily
-              using spaced repetition.
+              using spaced repetition!!
             </Typography>
           </Box>
         )}

@@ -4,37 +4,35 @@ import { motion } from 'framer-motion';
 import { Box, Typography } from '@mui/material';
 
 const FloatingFlashcardModel = () => {
-  // Refs for the container and animation frame
   const containerRef = useRef(null);
   const requestRef = useRef(null);
 
-  // State for mouse position
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  // Sample flashcard data
-  const flashcards = [
-    {
-      question: 'What is the capital of France?',
-      answer: 'Paris',
-      color: 'rgba(108, 99, 255, 0.9)',
-    },
-    {
-      question: "Who wrote 'Romeo and Juliet'?",
-      answer: 'William Shakespeare',
-      color: 'rgba(99, 236, 255, 0.9)',
-    },
-    {
-      question: 'What is the chemical symbol for gold?',
-      answer: 'Au',
-      color: 'rgba(255, 157, 165, 0.9)',
-    },
-  ];
-
-  // State for card rotation
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
 
-  // Handle mouse movement
+  // Sample flashcard data with brutalist styling
+  const flashcards = [
+    {
+      question: 'What is AI?',
+      answer: 'Artificial Intelligence',
+      frontColor: '#1E1E1E',
+      backColor: '#FF2D55',
+    },
+    {
+      question: 'Machine Learning?',
+      answer: 'Algorithms that learn from data',
+      frontColor: '#FF2D55',
+      backColor: '#1E1E1E',
+    },
+    {
+      question: 'Neural Networks?',
+      answer: 'Brain-inspired computing systems',
+      frontColor: '#1E1E1E',
+      backColor: '#FF2D55',
+    },
+  ];
+
   const handleMouseMove = (e) => {
     if (!containerRef.current) return;
 
@@ -42,18 +40,15 @@ const FloatingFlashcardModel = () => {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
-    // Calculate mouse position relative to center
     const relativeX = (e.clientX - centerX) / (rect.width / 2);
     const relativeY = (e.clientY - centerY) / (rect.height / 2);
 
     setMousePosition({ x: relativeX, y: relativeY });
   };
 
-  // Animation loop
   const animate = () => {
-    // Smoothly interpolate rotation
-    const rotX = -mousePosition.y * 10; // Inverse Y for natural tilt
-    const rotY = mousePosition.x * 10;
+    const rotX = -mousePosition.y * 8;
+    const rotY = mousePosition.x * 8;
 
     setRotation({
       x: rotX,
@@ -63,7 +58,6 @@ const FloatingFlashcardModel = () => {
     requestRef.current = requestAnimationFrame(animate);
   };
 
-  // Set up and clean up animation frame
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
     window.addEventListener('mousemove', handleMouseMove);
@@ -74,13 +68,11 @@ const FloatingFlashcardModel = () => {
     };
   }, [mousePosition]);
 
-  // Handle touch capability
   useEffect(() => {
     const isTouchDevice =
       'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     if (isTouchDevice) {
-      // For touch devices, use a simpler animation
       cancelAnimationFrame(requestRef.current);
       setRotation({ x: 0, y: 0 });
     }
@@ -92,8 +84,8 @@ const FloatingFlashcardModel = () => {
       sx={{
         position: 'relative',
         width: '100%',
-        height: { xs: '300px', md: '500px' },
-        perspective: '1200px',
+        height: '100%',
+        perspective: '1500px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -102,19 +94,29 @@ const FloatingFlashcardModel = () => {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Glow effect under cards */}
+      {/* Geometric background elements */}
       <Box
         sx={{
           position: 'absolute',
-          width: '60%',
-          height: '50%',
-          borderRadius: '50%',
-          background:
-            'radial-gradient(circle, rgba(108, 99, 255, 0.4) 0%, rgba(99, 236, 255, 0.2) 50%, transparent 80%)',
-          filter: 'blur(40px)',
-          opacity: isHovering ? 0.8 : 0.5,
-          transition: 'opacity 0.5s ease',
-          transform: 'translateY(20%)',
+          width: '200px',
+          height: '200px',
+          border: '3px solid rgba(255, 45, 85, 0.2)',
+          transform: 'rotate(45deg)',
+          top: '10%',
+          left: '5%',
+          zIndex: 0,
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          width: '150px',
+          height: '150px',
+          backgroundColor: 'rgba(232, 244, 255, 0.3)',
+          transform: 'rotate(-15deg)',
+          bottom: '15%',
+          right: '10%',
+          zIndex: 0,
         }}
       />
 
@@ -122,151 +124,293 @@ const FloatingFlashcardModel = () => {
       {flashcards.map((card, index) => (
         <motion.div
           key={index}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 40, rotateZ: index * 5 }}
           animate={{
             opacity: 1,
             y: 0,
             rotateX: rotation.x,
             rotateY: rotation.y,
-            z: -index * 10, // Stack the cards
-            translateZ: isHovering ? -index * 40 : -index * 20, // Space out cards on hover
+            rotateZ: isHovering ? index * 8 : index * 3,
+            z: -index * 15,
+            translateX: isHovering ? index * 15 : index * 8,
+            translateY: isHovering ? -index * 15 : -index * 8,
           }}
           transition={{
             type: 'spring',
-            stiffness: 100,
-            damping: 20,
-            delay: index * 0.1,
+            stiffness: 80,
+            damping: 15,
+            delay: index * 0.15,
           }}
           style={{
             position: 'absolute',
-            width: `calc(100% - ${index * 20}px)`,
-            maxWidth: '460px',
-            height: `calc(280px - ${index * 5}px)`,
-            borderRadius: '16px',
-            backgroundColor: card.color,
-            boxShadow:
-              '0px 30px 60px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            width: `calc(90% - ${index * 10}px)`,
+            maxWidth: '400px',
+            height: `calc(240px - ${index * 8}px)`,
+            border: '4px solid #1E1E1E',
+            backgroundColor: card.frontColor,
+            boxShadow: `${8 + index * 2}px ${8 + index * 2}px 0 #1E1E1E`,
             display: 'flex',
             flexDirection: 'column',
-            padding: '24px',
+            padding: '20px',
             transformStyle: 'preserve-3d',
-            transform: `translateY(${-index * 10}px) rotateX(${
-              rotation.x
-            }deg) rotateY(${rotation.y}deg)`,
             zIndex: flashcards.length - index,
             overflow: 'hidden',
           }}
         >
-          {/* Card content */}
-          <Box
-            sx={{
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-            }}
-          >
-            {/* Question side */}
-            <Box>
-              <Typography
-                variant="overline"
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontSize: '0.7rem',
-                  letterSpacing: '1px',
-                }}
-              >
-                QUESTION
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{
-                  color: 'white',
-                  fontWeight: 600,
-                  mt: 1,
-                  fontSize: { xs: '1rem', md: '1.2rem' },
-                }}
-              >
-                {card.question}
-              </Typography>
-            </Box>
-
-            {/* Divider */}
-            <Box
-              sx={{
-                width: '100%',
-                height: '1px',
-                background: 'rgba(255, 255, 255, 0.2)',
-                my: 2,
-              }}
-            />
-
-            {/* Answer side */}
-            <Box>
-              <Typography
-                variant="overline"
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontSize: '0.7rem',
-                  letterSpacing: '1px',
-                }}
-              >
-                ANSWER
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: 'white',
-                  mt: 1,
-                  fontSize: { xs: '0.9rem', md: '1rem' },
-                }}
-              >
-                {card.answer}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Glass reflection effect */}
+          {/* Question Label */}
           <Box
             sx={{
               position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: '30%',
-              background:
-                'linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent)',
-              borderTopLeftRadius: '16px',
-              borderTopRightRadius: '16px',
-            }}
-          />
-
-          {/* Card logo/brand */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: '16px',
-              right: '16px',
-              opacity: 0.5,
-              display: 'flex',
-              alignItems: 'center',
+              top: 12,
+              left: 12,
+              px: 2,
+              py: 0.5,
+              backgroundColor:
+                card.frontColor === '#1E1E1E' ? '#FF2D55' : '#1E1E1E',
+              border: '2px solid #1E1E1E',
             }}
           >
             <Typography
               variant="caption"
               sx={{
-                color: 'white',
-                fontWeight: 600,
-                letterSpacing: '1px',
-                fontSize: { xs: '0.6rem', md: '0.7rem' },
-                opacity: 0.7,
+                fontFamily: "'Archivo', sans-serif",
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                fontSize: '0.6rem',
+                color: '#FFFEF2',
               }}
             >
-              PromptWise
+              Q
             </Typography>
           </Box>
+
+          {/* Card Number */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              width: '32px',
+              height: '32px',
+              backgroundColor:
+                card.frontColor === '#1E1E1E' ? '#FFFEF2' : '#1E1E1E',
+              border: '2px solid #1E1E1E',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                fontFamily: "'Unbounded', sans-serif",
+                fontWeight: 900,
+                fontSize: '0.9rem',
+                color: card.frontColor === '#1E1E1E' ? '#1E1E1E' : '#FFFEF2',
+              }}
+            >
+              {index + 1}
+            </Typography>
+          </Box>
+
+          {/* Question Content */}
+          <Box
+            sx={{
+              height: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mt: 4,
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                color: card.frontColor === '#1E1E1E' ? '#FFFEF2' : '#1E1E1E',
+                fontWeight: 600,
+                textAlign: 'center',
+                fontSize: { xs: '0.95rem', md: '1.1rem' },
+                lineHeight: 1.4,
+              }}
+            >
+              {card.question}
+            </Typography>
+          </Box>
+
+          {/* Divider Line - Brutalist style */}
+          <Box
+            sx={{
+              width: '100%',
+              height: '3px',
+              backgroundColor:
+                card.frontColor === '#1E1E1E' ? '#FF2D55' : '#1E1E1E',
+              my: 2,
+            }}
+          />
+
+          {/* Answer Label */}
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 12,
+              left: 12,
+              px: 2,
+              py: 0.5,
+              backgroundColor: card.backColor,
+              border: '2px solid #1E1E1E',
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                fontFamily: "'Archivo', sans-serif",
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                fontSize: '0.6rem',
+                color: '#FFFEF2',
+              }}
+            >
+              A
+            </Typography>
+          </Box>
+
+          {/* Answer Content */}
+          <Box
+            sx={{
+              height: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{
+                fontFamily: "'IBM Plex Sans', sans-serif",
+                color: card.frontColor === '#1E1E1E' ? '#FFFEF2' : '#1E1E1E',
+                textAlign: 'center',
+                fontSize: { xs: '0.85rem', md: '0.95rem' },
+                fontWeight: 500,
+                lineHeight: 1.5,
+              }}
+            >
+              {card.answer}
+            </Typography>
+          </Box>
+
+          {/* Brand Mark */}
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 12,
+              right: 12,
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                fontFamily: "'Unbounded', sans-serif",
+                fontWeight: 900,
+                letterSpacing: '0.05em',
+                fontSize: '0.55rem',
+                color:
+                  card.frontColor === '#1E1E1E'
+                    ? 'rgba(255, 254, 242, 0.3)'
+                    : 'rgba(30, 30, 30, 0.3)',
+              }}
+            >
+              PROMPTWISE
+            </Typography>
+          </Box>
+
+          {/* Decorative corner elements */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -2,
+              left: -2,
+              width: '20px',
+              height: '20px',
+              borderTop: '4px solid #FF2D55',
+              borderLeft: '4px solid #FF2D55',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: -2,
+              right: -2,
+              width: '20px',
+              height: '20px',
+              borderBottom: '4px solid #FF2D55',
+              borderRight: '4px solid #FF2D55',
+            }}
+          />
         </motion.div>
       ))}
+
+      {/* Floating "AI" badge */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          y: [0, -10, 0],
+        }}
+        transition={{
+          scale: { delay: 0.5, duration: 0.3 },
+          y: {
+            duration: 2,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          },
+        }}
+        style={{
+          position: 'absolute',
+          top: '-5%',
+          right: '-5%',
+          width: '80px',
+          height: '80px',
+          backgroundColor: '#FF2D55',
+          border: '4px solid #1E1E1E',
+          boxShadow: '6px 6px 0 #1E1E1E',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100,
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: "'Unbounded', sans-serif",
+            fontWeight: 900,
+            color: '#FFFEF2',
+            fontSize: '1.8rem',
+          }}
+        >
+          AI
+        </Typography>
+      </motion.div>
+
+      {/* Rotating border decoration */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{
+          duration: 30,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+        style={{
+          position: 'absolute',
+          width: '120%',
+          height: '120%',
+          border: '2px solid rgba(255, 45, 85, 0.15)',
+          borderRadius: '50%',
+          zIndex: -1,
+        }}
+      />
     </Box>
   );
 };

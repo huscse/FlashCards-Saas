@@ -37,91 +37,123 @@ import {
   Toolbar,
   IconButton,
   Chip,
-  Divider,
   useMediaQuery,
   CircularProgress,
 } from '@mui/material';
 import {
-  Lightbulb,
   Save as SaveIcon,
   ArrowBack,
   AutoFixHigh,
   ColorLens,
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Head from 'next/head';
 import { SignedIn, UserButton } from '@clerk/nextjs';
 
-// Updated theme to match the homepage styling
-const darkTheme = createTheme({
+// Brutalist-swiss theme matching the landing page
+const theme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: 'light',
     primary: {
-      main: '#6C63FF', // Modern purple
+      main: '#FF2D55',
+      contrastText: '#FFFEF2',
     },
     secondary: {
-      main: '#63ECFF', // Cyan accent
+      main: '#1E1E1E',
     },
     background: {
-      default: '#0A0E17', // Deep navy
-      paper: '#141B2D', // Slightly lighter navy
+      default: '#FFFEF2',
+      paper: '#FFFFFF',
     },
     text: {
-      primary: '#ffffff',
-      secondary: '#B8C7E0', // Soft blue-ish white
+      primary: '#1E1E1E',
+      secondary: '#6B6B6B',
     },
   },
   typography: {
-    fontFamily: "'Inter', 'Roboto', 'Arial', sans-serif",
+    fontFamily: "'Archivo', 'Helvetica Neue', sans-serif",
     h1: {
-      fontWeight: 700,
+      fontFamily: "'Unbounded', 'Arial Black', sans-serif",
+      fontWeight: 800,
+      letterSpacing: '-0.04em',
     },
     h2: {
-      fontWeight: 700,
+      fontFamily: "'Unbounded', 'Arial Black', sans-serif",
+      fontWeight: 800,
+      letterSpacing: '-0.03em',
     },
     h3: {
-      fontWeight: 600,
+      fontFamily: "'Unbounded', 'Arial Black', sans-serif",
+      fontWeight: 700,
+      letterSpacing: '-0.02em',
     },
     h4: {
+      fontFamily: "'Archivo', sans-serif",
       fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 600,
+      letterSpacing: '-0.01em',
     },
     h6: {
+      fontFamily: "'IBM Plex Sans', sans-serif",
       fontWeight: 500,
+    },
+    body1: {
+      fontFamily: "'IBM Plex Sans', sans-serif",
+      fontSize: '1.05rem',
+      lineHeight: 1.7,
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 0,
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          textTransform: 'none',
-          fontWeight: 500,
-          padding: '10px 20px',
-        },
-        containedPrimary: {
-          boxShadow: '0 4px 14px 0 rgba(108, 99, 255, 0.39)',
+          borderRadius: 0,
+          textTransform: 'uppercase',
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          padding: '12px 24px',
+          fontSize: '0.875rem',
         },
       },
     },
-    MuiPaper: {
+    MuiCard: {
       styleOverrides: {
         root: {
-          backgroundImage: 'none',
+          borderRadius: 0,
+          border: '3px solid #1E1E1E',
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 0,
+            '& fieldset': {
+              borderWidth: '2px',
+              borderColor: '#1E1E1E',
+            },
+            '&:hover fieldset': {
+              borderColor: '#FF2D55',
+              borderWidth: '2px',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#FF2D55',
+              borderWidth: '3px',
+            },
+          },
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#141B2D',
-          backgroundImage: 'none',
+          borderRadius: 0,
+          border: '4px solid #1E1E1E',
+          boxShadow: '8px 8px 0 #1E1E1E',
         },
       },
     },
@@ -136,36 +168,38 @@ export default function Generate() {
   const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
-  const [frontColor, setFrontColor] = useState('#6C63FF');
-  const [backColor, setBackColor] = useState('#63ECFF');
+  const [frontColor, setFrontColor] = useState('#1E1E1E');
+  const [backColor, setBackColor] = useState('#FF2D55');
   const [isLoading, setIsLoading] = useState(false);
   const [firebaseInitialized, setFirebaseInitialized] = useState(false);
 
-  const isMobile = useMediaQuery(darkTheme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   // Pre-defined prompt templates
   const promptTemplates = [
     {
-      name: 'Key Concepts',
-      text: 'Create flashcards for the following key concepts in biology: photosynthesis, cellular respiration, mitosis, meiosis',
+      name: 'Biology',
+      text: 'Create flashcards for these biology concepts: photosynthesis, cellular respiration, mitosis, meiosis',
+      icon: '🧬',
     },
     {
-      name: 'Vocabulary',
+      name: 'Spanish',
       text: 'Create vocabulary flashcards for these Spanish terms: hola, adiós, por favor, gracias, buenos días',
+      icon: '🇪🇸',
     },
     {
-      name: 'Formulas',
-      text: 'Create flashcards for these mathematical formulas: quadratic formula, pythagorean theorem, area of a circle, volume of a sphere',
+      name: 'Math',
+      text: 'Create flashcards for these mathematical formulas: quadratic formula, pythagorean theorem, area of a circle',
+      icon: '📐',
     },
     {
-      name: 'Dates & Events',
-      text: 'Create flashcards for these historical dates and events: Declaration of Independence, World War I, Fall of the Berlin Wall',
+      name: 'History',
+      text: 'Create flashcards for these historical events: Declaration of Independence, World War I, Fall of the Berlin Wall',
+      icon: '📜',
     },
   ];
 
-  // Check if Firebase is properly initialized
   useEffect(() => {
-    // Simple check to see if db is available
     if (db) {
       console.log('Firestore database object is available');
       setFirebaseInitialized(true);
@@ -220,13 +254,10 @@ export default function Generate() {
     setOpen(false);
   };
 
-  // Add this function to your component
   const handleTemplateClick = (template) => {
-    // Set the text input to the template's text content
     setText(template.text);
   };
 
-  // Fixed saveFlashcards function
   const saveFlashcards = async () => {
     if (!isSignedIn || !user) {
       alert('You must be signed in to save flashcards.');
@@ -252,127 +283,131 @@ export default function Generate() {
         }),
       });
 
-      const data = await response.json(); // ✅ Make sure to define `data`
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.error || 'Something went wrong');
       }
 
       alert('Flashcards saved successfully!');
-      // You can also redirect or clear form state here
+      handleClose();
+      setName('');
     } catch (error) {
       console.error('Error saving flashcards:', error);
       alert(`Error saving flashcards: ${error.message}`);
     }
   };
 
-  // Example of how to read flashcards with the new structure
-  const loadFlashcards = async () => {
-    if (!isSignedIn || !user) return;
-
-    try {
-      const q = query(
-        collection(db, 'flashcard_collections'),
-        where('userId', '==', user.id),
-      );
-
-      const querySnapshot = await getDocs(q);
-      const collections = [];
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        collections.push({
-          id: doc.id,
-          name: data.name,
-          cards: data.cards || [],
-          createdAt: data.createdAt,
-        });
-      });
-
-      return collections;
-    } catch (error) {
-      console.error('Error loading flashcards:', error);
-      return [];
-    }
-  };
-
-  // Background gradient style
-  const gradientBgStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background:
-      'radial-gradient(circle at 30% 50%, rgba(108, 99, 255, 0.08), transparent 40%), radial-gradient(circle at 70% 20%, rgba(99, 236, 255, 0.05), transparent 30%)',
-    zIndex: 0,
-  };
-
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <Head>
         <title>Generate Flashcards | PromptWise</title>
         <meta
           name="description"
           content="Create AI-powered flashcards from any prompt"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800;900&family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
       </Head>
 
+      <style jsx global>{`
+        * {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::selection {
+          background: #ff2d55;
+          color: #fffef2;
+        }
+
+        .noise {
+          position: fixed;
+          top: -50%;
+          left: -50%;
+          right: -50%;
+          bottom: -50%;
+          width: 200%;
+          height: 200vh;
+          background: transparent
+            url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')
+            repeat;
+          pointer-events: none;
+          opacity: 0.4;
+          z-index: 1000;
+        }
+      `}</style>
+
       <Analytics />
       <CssBaseline />
+      <Box className="noise" />
 
       {/* App Bar */}
       <AppBar
-        position="static"
+        position="fixed"
         elevation={0}
         sx={{
-          background: 'rgba(10, 14, 23, 0.8)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: '#FFFEF2',
+          borderBottom: '3px solid #1E1E1E',
         }}
       >
-        <Toolbar sx={{ px: { xs: 2, md: 6 } }}>
+        <Toolbar sx={{ py: 2, px: { xs: 2, md: 4 } }}>
           <IconButton
             component={Link}
             href="/"
             edge="start"
-            color="inherit"
-            sx={{ mr: 2 }}
+            sx={{
+              mr: 2,
+              border: '2px solid #1E1E1E',
+              borderRadius: 0,
+              color: '#1E1E1E',
+              '&:hover': {
+                backgroundColor: '#1E1E1E',
+                color: '#FFFEF2',
+              },
+            }}
           >
             <ArrowBack />
           </IconButton>
 
           <Typography
-            variant="h6"
+            variant="h5"
             sx={{
               flexGrow: 1,
-              fontWeight: 700,
-              background: 'linear-gradient(90deg, #6C63FF, #63ECFF)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              fontFamily: "'Unbounded', sans-serif",
+              fontWeight: 900,
+              fontSize: { xs: '1.2rem', md: '1.5rem' },
+              color: '#1E1E1E',
             }}
           >
-            PromptWise
+            PROMPTWISE
           </Typography>
 
           <SignedIn>
             <Button
-              color="inherit"
               component={Link}
               href="/flashcards"
+              variant="outlined"
               sx={{
                 mr: 2,
+                border: '2px solid #1E1E1E',
+                color: '#1E1E1E',
                 '&:hover': {
-                  backgroundColor: 'rgba(108, 99, 255, 0.1)',
+                  backgroundColor: '#1E1E1E',
+                  color: '#FFFEF2',
+                  border: '2px solid #1E1E1E',
                 },
               }}
             >
-              My Flashcards
+              MY FLASHCARDS
             </Button>
             <UserButton />
           </SignedIn>
@@ -381,341 +416,549 @@ export default function Generate() {
 
       <Box
         sx={{
-          minHeight: 'calc(100vh - 64px)',
-          background: '#0A0E17',
-          position: 'relative',
+          minHeight: '100vh',
+          pt: { xs: 10, md: 12 },
           pb: 8,
+          position: 'relative',
         }}
       >
-        {/* Background gradient */}
-        <Box sx={gradientBgStyle} />
+        {/* Geometric background elements */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '10%',
+            right: '5%',
+            width: '300px',
+            height: '300px',
+            border: '3px solid rgba(255, 45, 85, 0.1)',
+            transform: 'rotate(12deg)',
+            zIndex: 0,
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: '15%',
+            left: '3%',
+            width: '250px',
+            height: '250px',
+            backgroundColor: 'rgba(232, 244, 255, 0.3)',
+            transform: 'rotate(-8deg)',
+            zIndex: 0,
+          }}
+        />
 
-        <Container
-          maxWidth="lg"
-          sx={{ position: 'relative', zIndex: 1, pt: 4 }}
-        >
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Typography
-              variant="h4"
-              component="h1"
-              gutterBottom
-              align="center"
-              sx={{
-                fontWeight: 700,
-                mb: 4,
-                background: 'linear-gradient(90deg, #fff, #B8C7E0)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Create Your Flashcards
-            </Typography>
-
-            {/* Prompt Input Section */}
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={8} sx={{ mx: 'auto' }}>
-                <Paper
+            {/* Header */}
+            <Box sx={{ mb: 6, textAlign: 'center' }}>
+              <Box
+                sx={{
+                  display: 'inline-block',
+                  border: '2px solid #1E1E1E',
+                  px: 3,
+                  py: 1,
+                  mb: 3,
+                  backgroundColor: '#FFF',
+                }}
+              >
+                <Typography
+                  variant="body2"
                   sx={{
-                    p: { xs: 3, md: 4 },
-                    background: 'rgba(20, 27, 45, 0.7)',
-                    backdropFilter: 'blur(16px)',
-                    borderRadius: '16px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
-                    position: 'relative',
-                    overflow: 'hidden',
+                    fontWeight: 700,
+                    letterSpacing: '0.15em',
+                    fontSize: '0.75rem',
+                    color: '#FF2D55',
                   }}
                 >
-                  {/* Decorative glow effect */}
+                  AI GENERATOR
+                </Typography>
+              </Box>
+
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: { xs: '2.5rem', md: '4rem' },
+                  mb: 3,
+                  lineHeight: 1,
+                }}
+              >
+                CREATE
+                <br />
+                <Box
+                  component="span"
+                  sx={{
+                    position: 'relative',
+                    display: 'inline-block',
+                  }}
+                >
                   <Box
                     sx={{
                       position: 'absolute',
-                      top: '-50%',
-                      left: '-10%',
-                      width: '120%',
-                      height: '150%',
-                      background:
-                        'radial-gradient(ellipse at center, rgba(108, 99, 255, 0.15) 0%, transparent 70%)',
-                      opacity: 0.5,
-                      zIndex: 0,
+                      bottom: '10%',
+                      left: '-4%',
+                      right: '-4%',
+                      height: '30%',
+                      background: '#FF2D55',
+                      zIndex: -1,
                     }}
                   />
+                  FLASHCARDS
+                </Box>
+              </Typography>
 
-                  <Box position="relative" zIndex={1}>
-                    <Typography variant="h5" mb={3} sx={{ fontWeight: 600 }}>
-                      What would you like to learn?
-                    </Typography>
-
-                    <Typography variant="body1" color="text.secondary" mb={3}>
-                      Enter a prompt describing what you want to create
-                      flashcards about. Be specific about the subject, concepts,
-                      or terms you want to learn.
-                    </Typography>
-
-                    {/* Template chips */}
-                    <Box sx={{ mb: 3 }}>
-                      <Typography
-                        variant="subtitle2"
-                        color="text.secondary"
-                        mb={1}
-                      >
-                        Try a template:
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {promptTemplates.map((template, index) => (
-                          <Chip
-                            key={index}
-                            label={template.name}
-                            onClick={() => handleTemplateClick(template)}
-                            sx={{
-                              backgroundColor: 'rgba(108, 99, 255, 0.2)',
-                              '&:hover': {
-                                backgroundColor: 'rgba(108, 99, 255, 0.3)',
-                              },
-                              mb: 1,
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </Box>
-
-                    <TextField
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                      label="Type your prompt here..."
-                      fullWidth
-                      multiline
-                      rows={4}
-                      variant="outlined"
-                      InputProps={{
-                        sx: {
-                          backgroundColor: 'rgba(10, 14, 23, 0.5)',
-                          borderRadius: '12px',
-                          '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#6C63FF',
-                          },
-                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#6C63FF',
-                          },
-                        },
-                      }}
-                      InputLabelProps={{
-                        sx: {
-                          color: 'text.secondary',
-                        },
-                      }}
-                      sx={{ mb: 3 }}
-                    />
-
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleSubmit}
-                      fullWidth
-                      disabled={isLoading}
-                      startIcon={
-                        isLoading ? (
-                          <CircularProgress size={20} color="inherit" />
-                        ) : (
-                          <AutoFixHigh />
-                        )
-                      }
-                      sx={{
-                        py: 1.5,
-                        background: 'linear-gradient(90deg, #6C63FF, #8A83FF)',
-                        boxShadow: '0px 4px 15px rgba(108, 99, 255, 0.3)',
-                        '&:hover': {
-                          background:
-                            'linear-gradient(90deg, #5A52FF, #6C63FF)',
-                          boxShadow: '0px 4px 20px rgba(108, 99, 255, 0.5)',
-                        },
-                      }}
-                    >
-                      {isLoading ? 'Generating...' : 'Generate Flashcards'}
-                    </Button>
-                  </Box>
-                </Paper>
-              </Grid>
-            </Grid>
-
-            {/* Flashcards Preview Section */}
-            {flashcards.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+              <Typography
+                variant="h6"
+                sx={{
+                  color: 'text.secondary',
+                  fontFamily: "'IBM Plex Sans', sans-serif",
+                  fontWeight: 400,
+                  maxWidth: '600px',
+                  mx: 'auto',
+                }}
               >
-                <Box sx={{ mt: 8 }}>
+                Transform any topic into structured learning materials with AI
+              </Typography>
+            </Box>
+
+            {/* Main Input Section */}
+            <Box
+              sx={{
+                maxWidth: '800px',
+                mx: 'auto',
+                mb: 8,
+              }}
+            >
+              <Paper
+                sx={{
+                  p: { xs: 3, md: 5 },
+                  border: '4px solid #1E1E1E',
+                  backgroundColor: '#FFF',
+                  boxShadow: '8px 8px 0 #1E1E1E',
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  sx={{
+                    mb: 3,
+                    fontWeight: 700,
+                    fontFamily: "'Unbounded', sans-serif",
+                    fontSize: '1.3rem',
+                  }}
+                >
+                  WHAT TO LEARN?
+                </Typography>
+
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mb: 4,
+                    color: 'text.secondary',
+                  }}
+                >
+                  Describe what you want to study. Be specific about concepts,
+                  terms, or topics.
+                </Typography>
+
+                {/* Template chips */}
+                <Box sx={{ mb: 4 }}>
                   <Typography
-                    variant="h4"
-                    align="center"
-                    mb={2}
+                    variant="subtitle2"
                     sx={{
-                      fontWeight: 600,
-                      background: 'linear-gradient(90deg, #fff, #B8C7E0)',
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
+                      mb: 2,
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      fontSize: '0.75rem',
+                      textTransform: 'uppercase',
                     }}
                   >
-                    Your Flashcards
+                    Quick Start Templates
                   </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    {promptTemplates.map((template, index) => (
+                      <Box
+                        key={index}
+                        component={motion.div}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleTemplateClick(template)}
+                        sx={{
+                          border: '2px solid #1E1E1E',
+                          px: 2,
+                          py: 1,
+                          backgroundColor: '#FFF',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          '&:hover': {
+                            backgroundColor: '#1E1E1E',
+                            color: '#FFFEF2',
+                          },
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: '0.85rem',
+                          }}
+                        >
+                          {template.icon} {template.name}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
 
-                  <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    align="center"
-                    mb={4}
-                  >
-                    Click on a card to flip it and see the answer
-                  </Typography>
+                <TextField
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="Type your prompt here..."
+                  fullWidth
+                  multiline
+                  rows={5}
+                  variant="outlined"
+                  sx={{
+                    mb: 3,
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: '#FFFEF2',
+                      fontFamily: "'IBM Plex Sans', sans-serif",
+                    },
+                  }}
+                />
 
-                  {/* Color selection */}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                  fullWidth
+                  disabled={isLoading}
+                  startIcon={
+                    isLoading ? (
+                      <CircularProgress size={20} sx={{ color: '#FFFEF2' }} />
+                    ) : (
+                      <AutoFixHigh />
+                    )
+                  }
+                  sx={{
+                    py: 1.5,
+                    boxShadow: '6px 6px 0 #1E1E1E',
+                    '&:hover': {
+                      transform: 'translate(3px, 3px)',
+                      boxShadow: '3px 3px 0 #1E1E1E',
+                    },
+                    transition: 'all 0.2s',
+                    '&:disabled': {
+                      backgroundColor: '#6B6B6B',
+                      color: '#FFFEF2',
+                    },
+                  }}
+                >
+                  {isLoading ? 'GENERATING...' : 'GENERATE FLASHCARDS'}
+                </Button>
+              </Paper>
+            </Box>
+
+            {/* Flashcards Preview Section */}
+            <AnimatePresence>
+              {flashcards.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <Box sx={{ mb: 6 }}>
+                    <Box
+                      sx={{
+                        display: 'inline-block',
+                        border: '2px solid #1E1E1E',
+                        px: 3,
+                        py: 1,
+                        mb: 3,
+                        backgroundColor: '#FFF',
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 700,
+                          letterSpacing: '0.15em',
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        {flashcards.length} CARDS GENERATED
+                      </Typography>
+                    </Box>
+
+                    <Typography
+                      variant="h3"
+                      sx={{
+                        fontSize: { xs: '2rem', md: '3rem' },
+                        mb: 2,
+                      }}
+                    >
+                      YOUR FLASHCARDS
+                    </Typography>
+
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: 'text.secondary',
+                        mb: 4,
+                      }}
+                    >
+                      Click any card to flip and reveal the answer
+                    </Typography>
+                  </Box>
+
+                  {/* Color Customization */}
                   <Paper
                     sx={{
-                      p: 3,
-                      mb: 4,
-                      mx: 'auto',
+                      p: 4,
+                      mb: 6,
                       maxWidth: '600px',
-                      background: 'rgba(20, 27, 45, 0.6)',
-                      backdropFilter: 'blur(16px)',
-                      borderRadius: '16px',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      mx: 'auto',
+                      border: '3px solid #1E1E1E',
+                      backgroundColor: '#E8F4FF',
                     }}
                   >
                     <Typography
                       variant="h6"
-                      mb={2}
                       sx={{
+                        mb: 3,
+                        fontWeight: 700,
                         display: 'flex',
                         alignItems: 'center',
                         gap: 1,
                       }}
                     >
-                      <ColorLens /> Customize Colors
+                      <ColorLens /> CUSTOMIZE COLORS
                     </Typography>
 
-                    <Grid container spacing={2}>
+                    <Grid container spacing={3}>
                       <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Front Color"
-                          type="color"
-                          value={frontColor}
-                          onChange={(e) => setFrontColor(e.target.value)}
-                          fullWidth
+                        <Box
                           sx={{
-                            '& .MuiOutlinedInput-input': {
-                              p: 1,
-                              height: 40,
-                            },
+                            border: '2px solid #1E1E1E',
+                            p: 2,
+                            backgroundColor: '#FFF',
                           }}
-                        />
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 700,
+                              letterSpacing: '0.1em',
+                              fontSize: '0.7rem',
+                              mb: 1,
+                              display: 'block',
+                            }}
+                          >
+                            FRONT COLOR
+                          </Typography>
+                          <input
+                            type="color"
+                            value={frontColor}
+                            onChange={(e) => setFrontColor(e.target.value)}
+                            style={{
+                              width: '100%',
+                              height: '50px',
+                              border: '2px solid #1E1E1E',
+                              cursor: 'pointer',
+                            }}
+                          />
+                        </Box>
                       </Grid>
 
                       <Grid item xs={12} sm={6}>
-                        <TextField
-                          label="Back Color"
-                          type="color"
-                          value={backColor}
-                          onChange={(e) => setBackColor(e.target.value)}
-                          fullWidth
+                        <Box
                           sx={{
-                            '& .MuiOutlinedInput-input': {
-                              p: 1,
-                              height: 40,
-                            },
+                            border: '2px solid #1E1E1E',
+                            p: 2,
+                            backgroundColor: '#FFF',
                           }}
-                        />
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontWeight: 700,
+                              letterSpacing: '0.1em',
+                              fontSize: '0.7rem',
+                              mb: 1,
+                              display: 'block',
+                            }}
+                          >
+                            BACK COLOR
+                          </Typography>
+                          <input
+                            type="color"
+                            value={backColor}
+                            onChange={(e) => setBackColor(e.target.value)}
+                            style={{
+                              width: '100%',
+                              height: '50px',
+                              border: '2px solid #1E1E1E',
+                              cursor: 'pointer',
+                            }}
+                          />
+                        </Box>
                       </Grid>
                     </Grid>
                   </Paper>
 
-                  {/* Flashcards grid */}
-                  <Grid container spacing={3}>
+                  {/* Flashcards Grid */}
+                  <Grid container spacing={3} sx={{ mb: 6 }}>
                     {flashcards.map((flashcard, index) => (
                       <Grid item xs={12} sm={6} md={4} key={index}>
                         <motion.div
-                          initial={{ opacity: 0, y: 20 }}
+                          initial={{ opacity: 0, y: 30 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.4, delay: index * 0.1 }}
-                          whileHover={{
-                            y: -10,
-                            transition: { duration: 0.2 },
-                          }}
+                          transition={{ duration: 0.4, delay: index * 0.05 }}
                         >
                           <Card
                             sx={{
-                              background: 'rgba(20, 27, 45, 0.4)',
-                              backdropFilter: 'blur(16px)',
-                              borderRadius: '16px',
-                              border: '1px solid rgba(255, 255, 255, 0.08)',
-                              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
-                              overflow: 'visible',
+                              backgroundColor: '#FFF',
+                              boxShadow: '6px 6px 0 #1E1E1E',
+                              transition: 'all 0.3s',
+                              cursor: 'pointer',
+                              '&:hover': {
+                                boxShadow: '3px 3px 0 #1E1E1E',
+                                transform: 'translate(3px, 3px)',
+                              },
                             }}
                           >
                             <CardActionArea
                               onClick={() => handleCardClick(index)}
-                              sx={{ height: '100%' }}
                             >
-                              <CardContent>
+                              <CardContent sx={{ p: 0 }}>
                                 <Box
                                   sx={{
                                     perspective: '1000px',
-                                    height: 200,
-                                    '& > div': {
-                                      transition: 'transform 0.6s',
-                                      transformStyle: 'preserve-3d',
+                                    height: '250px',
+                                  }}
+                                >
+                                  <Box
+                                    sx={{
                                       position: 'relative',
                                       width: '100%',
                                       height: '100%',
+                                      transition: 'transform 0.6s',
+                                      transformStyle: 'preserve-3d',
                                       transform: flipped[index]
                                         ? 'rotateY(180deg)'
                                         : 'rotateY(0deg)',
-                                    },
-                                    '& > div > div': {
-                                      position: 'absolute',
-                                      width: '100%',
-                                      height: '100%',
-                                      backfaceVisibility: 'hidden',
-                                      display: 'flex',
-                                      justifyContent: 'center',
-                                      alignItems: 'center',
-                                      padding: 2,
-                                      boxSizing: 'border-box',
-                                      borderRadius: '12px',
-                                      overflow: 'auto',
-                                    },
-                                    '& > div > div:nth-of-type(1)': {
-                                      backgroundColor: frontColor,
-                                      color: '#ffffff',
-                                    },
-                                    '& > div > div:nth-of-type(2)': {
-                                      backgroundColor: backColor,
-                                      color: '#ffffff',
-                                      transform: 'rotateY(180deg)',
-                                    },
-                                  }}
-                                >
-                                  <div>
-                                    <div>
-                                      <Typography variant="h6" component="div">
+                                    }}
+                                  >
+                                    {/* Front */}
+                                    <Box
+                                      sx={{
+                                        position: 'absolute',
+                                        width: '100%',
+                                        height: '100%',
+                                        backfaceVisibility: 'hidden',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        padding: 3,
+                                        backgroundColor: frontColor,
+                                        color: '#FFFEF2',
+                                      }}
+                                    >
+                                      <Box
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 12,
+                                          left: 12,
+                                          px: 2,
+                                          py: 0.5,
+                                          backgroundColor: '#FF2D55',
+                                          border: '2px solid #1E1E1E',
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="caption"
+                                          sx={{
+                                            fontWeight: 700,
+                                            letterSpacing: '0.1em',
+                                            fontSize: '0.6rem',
+                                            color: '#FFFEF2',
+                                          }}
+                                        >
+                                          Q
+                                        </Typography>
+                                      </Box>
+                                      <Typography
+                                        variant="h6"
+                                        sx={{
+                                          textAlign: 'center',
+                                          fontFamily:
+                                            "'IBM Plex Sans', sans-serif",
+                                          fontWeight: 600,
+                                          fontSize: '1.1rem',
+                                        }}
+                                      >
                                         {flashcard.front}
                                       </Typography>
-                                    </div>
-                                    <div>
+                                    </Box>
+
+                                    {/* Back */}
+                                    <Box
+                                      sx={{
+                                        position: 'absolute',
+                                        width: '100%',
+                                        height: '100%',
+                                        backfaceVisibility: 'hidden',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        padding: 3,
+                                        backgroundColor: backColor,
+                                        color: '#FFFEF2',
+                                        transform: 'rotateY(180deg)',
+                                      }}
+                                    >
+                                      <Box
+                                        sx={{
+                                          position: 'absolute',
+                                          top: 12,
+                                          left: 12,
+                                          px: 2,
+                                          py: 0.5,
+                                          backgroundColor: '#1E1E1E',
+                                          border: '2px solid #FFFEF2',
+                                        }}
+                                      >
+                                        <Typography
+                                          variant="caption"
+                                          sx={{
+                                            fontWeight: 700,
+                                            letterSpacing: '0.1em',
+                                            fontSize: '0.6rem',
+                                            color: '#FFFEF2',
+                                          }}
+                                        >
+                                          A
+                                        </Typography>
+                                      </Box>
                                       <Typography
                                         variant="body1"
-                                        component="div"
+                                        sx={{
+                                          textAlign: 'center',
+                                          fontFamily:
+                                            "'IBM Plex Sans', sans-serif",
+                                          fontWeight: 500,
+                                          fontSize: '1rem',
+                                        }}
                                       >
                                         {flashcard.back}
                                       </Typography>
-                                    </div>
-                                  </div>
+                                    </Box>
+                                  </Box>
                                 </Box>
                               </CardContent>
                             </CardActionArea>
@@ -725,99 +968,82 @@ export default function Generate() {
                     ))}
                   </Grid>
 
-                  {/* Save button */}
-                  <Box sx={{ mt: 5, textAlign: 'center' }}>
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                  {/* Save Button */}
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      startIcon={<SaveIcon />}
+                      onClick={handleOpen}
+                      sx={{
+                        py: 2,
+                        px: 6,
+                        boxShadow: '6px 6px 0 #1E1E1E',
+                        fontSize: '1rem',
+                        '&:hover': {
+                          transform: 'translate(3px, 3px)',
+                          boxShadow: '3px 3px 0 #1E1E1E',
+                        },
+                        transition: 'all 0.2s',
+                      }}
                     >
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        startIcon={<SaveIcon />}
-                        onClick={handleOpen}
-                        sx={{
-                          py: 1.5,
-                          px: 4,
-                          background:
-                            'linear-gradient(90deg, #6C63FF, #8A83FF)',
-                          boxShadow: '0px 4px 15px rgba(108, 99, 255, 0.3)',
-                          '&:hover': {
-                            background:
-                              'linear-gradient(90deg, #5A52FF, #6C63FF)',
-                            boxShadow: '0px 4px 20px rgba(108, 99, 255, 0.5)',
-                          },
-                        }}
-                      >
-                        Save Flashcards
-                      </Button>
-                    </motion.div>
+                      SAVE FLASHCARDS
+                    </Button>
                   </Box>
-                </Box>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </Container>
       </Box>
 
       {/* Save Dialog */}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          sx: {
-            backgroundColor: 'rgba(20, 27, 45, 0.95)',
-            backdropFilter: 'blur(16px)',
-            borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-          },
-        }}
-      >
-        <DialogTitle sx={{ pb: 1 }}>
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            Save Flashcards
+      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Typography
+            variant="h5"
+            sx={{
+              fontFamily: "'Unbounded', sans-serif",
+              fontWeight: 700,
+            }}
+          >
+            SAVE COLLECTION
           </Typography>
         </DialogTitle>
 
         <DialogContent>
           <DialogContentText sx={{ mb: 3, color: 'text.secondary' }}>
-            Give your flashcard collection a memorable name so you can easily
-            find it later.
+            Give your flashcard collection a name to find it easily later.
           </DialogContentText>
 
           <TextField
             autoFocus
-            margin="dense"
             label="Collection Name"
             fullWidth
             variant="outlined"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            InputProps={{
-              sx: {
-                backgroundColor: 'rgba(10, 14, 23, 0.5)',
-                borderRadius: '12px',
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#6C63FF',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#6C63FF',
-                },
-              },
-            }}
+            placeholder="e.g., Biology Chapter 5"
+            sx={{ mt: 2 }}
           />
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, pb: 3 }}>
+        <DialogActions sx={{ p: 3 }}>
           <Button
             onClick={handleClose}
+            variant="outlined"
             sx={{
-              color: 'text.secondary',
+              border: '2px solid #1E1E1E',
+              color: '#1E1E1E',
+              '&:hover': {
+                backgroundColor: '#1E1E1E',
+                color: '#FFFEF2',
+                border: '2px solid #1E1E1E',
+              },
             }}
           >
-            Cancel
+            CANCEL
           </Button>
 
           <Button
@@ -825,13 +1051,15 @@ export default function Generate() {
             variant="contained"
             color="primary"
             sx={{
-              background: 'linear-gradient(90deg, #6C63FF, #8A83FF)',
+              boxShadow: '4px 4px 0 #1E1E1E',
               '&:hover': {
-                background: 'linear-gradient(90deg, #5A52FF, #6C63FF)',
+                transform: 'translate(2px, 2px)',
+                boxShadow: '2px 2px 0 #1E1E1E',
               },
+              transition: 'all 0.2s',
             }}
           >
-            Save
+            SAVE
           </Button>
         </DialogActions>
       </Dialog>

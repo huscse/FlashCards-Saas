@@ -14,7 +14,6 @@ import {
 import Link from 'next/link';
 import Head from 'next/head';
 
-// Custom theme that works better with Clerk's components
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',

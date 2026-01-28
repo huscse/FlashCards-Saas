@@ -1142,7 +1142,7 @@ export default function Home() {
                   letterSpacing: '0.05em',
                 }}
               >
-                © {new Date().getFullYear()} PromptWise. Intelligence Amplified.
+                © {new Date().getFullYear()} PromptWise.
               </Typography>
             </Grid>
             <Grid item xs={12} md={6} sx={{ textAlign: { md: 'right' } }}>

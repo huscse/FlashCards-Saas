@@ -20,7 +20,6 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import FloatingFlashcardModel from './floatingmodel/page';
 
-// Bold, brutalist-inspired theme with Swiss design precision
 const theme = createTheme({
   palette: {
     mode: 'light',
